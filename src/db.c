@@ -1365,6 +1365,7 @@ void delGenericCommand(client *c, int lazy) {
 }
 
 void delCommand(client *c) {
+    sleep(0.5);
     delGenericCommand(c,server.lazyfree_lazy_user_del);
 }
 
