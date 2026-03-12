@@ -5154,6 +5154,10 @@ void timeCommand(client *c) {
     addReplyBulkLongLong(c, server.ustime-((long long)server.unixtime)*1000000);
 }
 
+void pastenCommand(client *c) {
+    addReplyLongLong(c, 7);
+}
+
 typedef struct replyFlagNames {
     uint64_t flag;
     const char *name;

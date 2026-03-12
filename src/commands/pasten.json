@@ -1,0 +1,14 @@
+{
+    "PASTEN": {
+        "summary": "Returns the best number",
+        "complexity": "O(1)",
+        "group": "generic",
+        "since": "8.6.1",
+        "arity": 0,
+        "function": "pastenCommand",
+        "reply_schema": {
+            "description": "the best number",
+            "type": "integer"
+        }
+    }
+}
