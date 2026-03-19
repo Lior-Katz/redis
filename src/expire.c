@@ -43,6 +43,7 @@ int activeExpireCycleTryExpire(redisDb *db, kvobj *kv, long long now) {
 
     enterExecutionUnit(1, 0);
     sds key = kvobjGetKey(kv);
+    serverLog(LL_NOTICE, "Removing expired key %s", key);
     robj *keyobj = createStringObject(key,sdslen(key));
     deleteExpiredKeyAndPropagate(db,keyobj);
     server.stat_expiredkeys_active++;
