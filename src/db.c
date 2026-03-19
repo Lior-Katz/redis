@@ -38,6 +38,8 @@ static_assert(MAX_KEYSIZES_TYPES == OBJ_TYPE_BASIC_MAX, "Must be equal");
 #define EXPIRE_ALLOW_ACCESS_EXPIRED 4
 #define EXPIRE_ALLOW_ACCESS_TRIMMED 8
 
+#define PROTECTED_KEY_PREFIX "PROTECTED_"
+
 /* Return values for expireIfNeeded */
 typedef enum {
     KEY_VALID = 0, /* Could be volatile and not yet expired, non-volatile, or even non-existing key. */
@@ -1344,10 +1346,27 @@ void flushdbCommand(client *c) {
 
 }
 
+/**
+ * Helper function to check if a string starts with a specified prefix.
+ * Returns 0 if str does not begin with prefix,
+ * and a non-zero value otherwise.
+ */
+inline int starts_with(const char *str, const char *prefix) {
+    return strncmp(str, prefix, strlen(prefix)) == 0;
+}
+
 /* This command implements DEL and UNLINK. */
 void delGenericCommand(client *c, int lazy) {
     int numdel = 0, j;
 
+    for (j = 1; j < c->argc; j++) {
+        char *key = c->argv[j]->ptr;
+        if (starts_with(key, PROTECTED_KEY_PREFIX)) {
+            sds s = sdscatprintf(sdsempty(), "-PROTECTED Cannot delete protected key %s", key);
+            addReplyErrorSds(c, s);
+            return;
+        }
+    }
     for (j = 1; j < c->argc; j++) {
         if (expireIfNeeded(c->db, c->argv[j], NULL, 0) == KEY_DELETED)
             continue;
